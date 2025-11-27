@@ -44,7 +44,7 @@ resources:
           notebook_task:
             notebook_path: ../src/sample_notebook.ipynb
             # Environments for notebooks are still in private preview
-            # environment_key: default
+          environment_key: default
   {{- else}}
           job_cluster_key: default
           notebook_task:
@@ -99,23 +99,3 @@ resources:
             pipeline_id: ${resources.pipelines.{{.project_name}}_etl.id}
 {{- end}}
 
-{{- if $serverless}}
-      environments:
-        - environment_key: default
-          spec:
-            environment_version: "{{template "serverless_environment_version"}}"
-  {{- if $python_package}}
-            dependencies:
-              - ../dist/*.whl
-  {{- end}}
-{{- else}}
-      job_clusters:
-        - job_cluster_key: default
-          new_cluster:
-            spark_version: {{template "latest_lts_dbr_version"}}
-            node_type_id: {{smallest_node_type}}
-            data_security_mode: SINGLE_USER
-            autoscale:
-              min_workers: 1
-              max_workers: 2
-{{- end}}

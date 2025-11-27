@@ -33,6 +33,8 @@ variables:
     description: The catalog to use
   schema:
     description: The schema to use
+  cluster_id:
+    description: The cluster ID to use for development deployments
 
 {{- $dev_schema := "dev" }}
 {{- $prod_schema := "prod" }}
@@ -53,6 +55,7 @@ targets:
     variables:
       catalog: {{.default_catalog}}
       schema: {{$dev_schema}}
+    cluster_id: "${var.cluster_id}"
   {{- if $with_classic}}
     presets:
       artifacts_dynamic_version: true
