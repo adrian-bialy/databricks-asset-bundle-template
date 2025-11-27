@@ -1,8 +1,11 @@
-from databricks.sdk.runtime import spark
-from pyspark.sql import DataFrame
+import os
+import pytest
 from {{.project_name}} import taxis
 
-
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Requires live Databricks/Spark; skipped in CI",
+)
 def test_find_all_taxis():
     results = taxis.find_all_taxis()
     assert results.count() > 5
