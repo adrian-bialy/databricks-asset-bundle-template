@@ -8,5 +8,5 @@ from pyspark.sql.functions import col
 
 
 @dp.table
-def sample_trips_{{.project_name}}():
+def sample_trips_{{.project_name}}_py():
     return spark.read.table("samples.nyctaxi.trips")
