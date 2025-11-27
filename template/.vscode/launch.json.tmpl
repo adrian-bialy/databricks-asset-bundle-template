@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Example Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "{{.project_name}}.main",
+            "args": [
+                "--catalog", "{{.default_catalog}}",
+                "--schema", "{{short_name}}"
+            ],
+            "env": {
+                "DATABRICKS_SERVERLESS_COMPUTE_ID": "auto"
+            }
+        }
+    ]
+}
