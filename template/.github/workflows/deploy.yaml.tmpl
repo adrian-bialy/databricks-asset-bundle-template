@@ -26,7 +26,7 @@ jobs:
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
-          pip install poetry
+          pip install poetry uv
 
       - name: Install dependencies (including dev)
         env:
@@ -37,6 +37,10 @@ jobs:
       - name: Run tests
         run: |
           poetry run pytest tests/
+        env:
+          DATABRICKS_HOST: "${{`{{ vars.DATABRICKS_HOST }}`}}"
+          DATABRICKS_TOKEN: "${{`{{ secrets.DATABRICKS_TOKEN }}`}}"
+          DATABRICKS_SERVERLESS_COMPUTE_ID: "auto"
 
   deploy_bundle:
     name: "Deploy bundle"
@@ -53,43 +57,9 @@ jobs:
       - uses: databricks/setup-cli@main
 
       - run: |
-          if [ -d "$GITHUB_WORKSPACE/dab" ]; then
-            cd "$GITHUB_WORKSPACE/dab"
-            databricks bundle deploy
-          else
-            echo "DAB directory not found, skipping deployment" >> $GITHUB_STEP_SUMMARY
-            exit 0
-          fi
+          databricks bundle deploy
         working-directory: .
         env:
           DATABRICKS_HOST: "${{`{{ vars.DATABRICKS_HOST }}`}}"
           DATABRICKS_TOKEN: "${{`{{ secrets.DATABRICKS_TOKEN }}`}}"
-
-  run_bundle:
-    name: "Run bundle"
-    runs-on: ubuntu-latest
-
-    needs:
-      - deploy_bundle
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: databricks/setup-cli@main
-
-      - run: |
-          if [ -d "$GITHUB_WORKSPACE/dab" ]; then
-            cd "$GITHUB_WORKSPACE/dab"
-            for JOB_FILE in resources/*.yml; do
-              JOB_NAME=$(awk '/jobs:/{getline; print $1}' "$JOB_FILE" | sed 's/://')
-              echo "Job run: $JOB_NAME" >> $GITHUB_STEP_SUMMARY
-              databricks bundle run "$JOB_NAME" --no-wait >> $GITHUB_STEP_SUMMARY 2>&1
-            done
-          else
-            echo "DAB directory not found, skipping job run" >> $GITHUB_STEP_SUMMARY
-          fi
-        shell: /usr/bin/bash -e {0}
-        working-directory: .
-        env:
-          DATABRICKS_HOST: "${{`{{ vars.DATABRICKS_HOST }}`}}"
-          DATABRICKS_TOKEN: "${{`{{ secrets.DATABRICKS_TOKEN }}`}}"
+          DATABRICKS_SERVERLESS_COMPUTE_ID: "auto"
