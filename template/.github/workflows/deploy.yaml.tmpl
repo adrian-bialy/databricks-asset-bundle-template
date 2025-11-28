@@ -68,7 +68,7 @@ jobs:
       - uses: databricks/setup-cli@main
 
       - run: |
-          databricks bundle deploy --var cluster_id="${{`{{ secrets.DATABRICKS_CLUSTER_ID }}`}}"
+          databricks bundle deploy --var cluster_id="${{`{{ secrets.DATABRICKS_CLUSTER_ID }}`}}" --var warehouse_id="${{`{{ secrets.DATABRICKS_WAREHOUSE_ID }}`}}"
         working-directory: .
         env:
           DATABRICKS_HOST: "${{`{{ vars.DATABRICKS_HOST }}`}}"
